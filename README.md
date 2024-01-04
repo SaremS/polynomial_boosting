@@ -23,3 +23,5 @@ should suffice. Make sure you have [Cmake](https://cmake.org/) and a `python-dev
 Polynomial p=1 Boosting VS. sklearn Gradient Boosting on a Quadratic function (hyperparameters were chosen to be similar):
 
 ![plot](./img/square_fit_plot.png)
+
+Also, check the [example notebook](https://github.com/SaremS/polynomial_boosting/blob/master/ExampleNotebook.ipynb)
