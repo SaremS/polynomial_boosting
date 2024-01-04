@@ -1,0 +1,8 @@
+.ipynb_checkpoints/
+venv/
+*.egg-info/
+build/
+$TMPDIR/
+.DS_Store
+*.pyc
+
