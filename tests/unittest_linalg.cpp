@@ -351,3 +351,35 @@ TEST(testlinalg, apply_binary) {
 
 	EXPECT_EQ(apply_binary(targmat, 0, targmat, 1, sumup), expmat);
 }
+
+TEST(testlinalg, replicate) {
+	std::vector<std::vector<double>> target = {
+		{1.0, 2.0},
+    	};
+	Matrix targmat = Matrix(target);
+
+	std::vector<std::vector<double>> expected = {
+		{1.0, 2.0},
+		{1.0, 2.0},
+		{1.0, 2.0}
+    	};
+	Matrix expmat = Matrix(expected);
+
+	EXPECT_EQ(targmat.replicate(3,1), expmat);
+}
+
+TEST(testlinalg, get_row) {
+	std::vector<std::vector<double>> target = {
+		{1.0, 2.0},
+		{3.0, 4.0},
+		{5.0, 6.0}
+    	};
+	Matrix targmat = Matrix(target);
+
+	std::vector<std::vector<double>> expected = {
+		{3.0, 4.0}
+    	};
+	Matrix expmat = Matrix(expected);
+
+	EXPECT_EQ(targmat.get_row(1), expmat);
+}

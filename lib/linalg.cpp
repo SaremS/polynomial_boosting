@@ -207,3 +207,13 @@ Matrix apply_binary(
 
 	return Matrix(result);
 }
+
+Matrix Matrix::replicate(int const &rows, int const &cols) const {
+	Matrix result = Matrix(this->matrix.replicate(rows, cols));
+	return result;
+}
+
+Matrix Matrix::get_row(int const &row) const {
+	Matrix result = Matrix(this->matrix.row(row).eval());
+	return result;
+}

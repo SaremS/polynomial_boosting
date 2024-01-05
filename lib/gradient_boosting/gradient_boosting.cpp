@@ -24,9 +24,7 @@ PYBIND11_MODULE(polynomial_boosting,m) {
 
 void GradientBoosting::fit(const Matrix &X, const Matrix &y) {
 	// Initialize the first tree
-	TreeStump* first_tree = new TreeStump(this->loss_function, this->min_obs_per_leaf, this->lambda_regularization);
-	first_tree->fit(X, y);
-	this->trees.push_back(first_tree);
+	this->initial_prediction = this->loss_function->minimizer_matrix(y).get_row(0);
 
 	auto loss_lambda = [this](double prediction, double actual) {
 		return this->loss_function->first_derivative(prediction, actual);
@@ -35,7 +33,7 @@ void GradientBoosting::fit(const Matrix &X, const Matrix &y) {
 	this->n_features = X.get_n_cols();
 	
 	// Fit the remaining trees
-	for (int i=0; i<this->n_trees-1; i++) {
+	for (int i=0; i<this->n_trees; i++) {
 		// Calculate the pseudo-residuals
 		Matrix y_pred = this->predict(X);
 		Matrix pseudo_residuals = apply_binary(y_pred, 0, y, 0, loss_lambda);
@@ -47,15 +45,15 @@ void GradientBoosting::fit(const Matrix &X, const Matrix &y) {
 }
 
 Matrix GradientBoosting::predict(const Matrix &X) const {
-	Matrix y_pred = this->trees[0]->predict(X);
-	for (int i=1; i<this->trees.size(); i++) {
+	Matrix y_pred = this->initial_prediction.replicate(X.get_n_rows(), 1);
+	for (int i=0; i<this->trees.size(); i++) {
 		y_pred = y_pred - this->learning_rate * this->trees[i]->predict(X);
 	}
 	return y_pred;
 }
 
 std::vector<double> GradientBoosting::get_feature_importances() const {
-	std::vector<double> feature_importances(this->trees.size(), 0.0);
+	std::vector<double> feature_importances(this->n_features, 0.0);
 	double total_importance = 0.0;
 
 	for (int i=0; i<this->trees.size(); i++) {
