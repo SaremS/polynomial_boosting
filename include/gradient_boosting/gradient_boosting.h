@@ -10,6 +10,7 @@
 class GradientBoosting {
 private:
 	LossFunction* loss_function;
+	Matrix initial_prediction;
 	std::vector<TreeStump*> trees;
 	double learning_rate;
 	double lambda_regularization;

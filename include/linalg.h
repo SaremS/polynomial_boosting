@@ -51,6 +51,9 @@ public:
 			const Matrix &other, 
 			const int &othercol, 
 			const double &value) const;
+
+	Matrix replicate(int const &rows, int const &cols) const;
+	Matrix get_row(int const &row) const;
 	
 
 };
