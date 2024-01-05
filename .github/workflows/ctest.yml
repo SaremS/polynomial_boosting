@@ -1,6 +1,12 @@
-name: C++ CI
+name: C++ Tests
 
-on: [push, pull_request]
+on:
+  push:
+    paths: ['CMakeLists.txt', 'include/**', 'lib/**', 'tests/**', '.github/workflows/ctest.yml']
+    tags: ['*']
+  pull_request:
+    paths: ['CMakeLists.txt', 'include/**', 'lib/**', 'tests/**', '.github/workflows/ctest.yml']
+    tags: ['*']
 
 jobs:
   build:
