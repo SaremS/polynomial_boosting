@@ -1,0 +1,29 @@
+name: C++ CI
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    # Setup CMake, GCC / Clang and Make
+    - name: Install dependencies
+      run: sudo apt-get update && sudo apt-get install -y cmake g++ make
+
+    # Setup GTest
+    - name: Install Google Test
+      run: sudo apt-get install -y libgtest-dev
+
+    # Build project
+    - name: Configure CMake
+      run: cmake -S . -B build/
+    - name: Build
+      run: cmake --build build/ --target all
+
+    # Run GTest tests
+    - name: Test
+      working-directory: build/
+      run: ctest
