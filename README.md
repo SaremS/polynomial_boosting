@@ -1,6 +1,6 @@
 # Polynomial Boosting
 
-[![Test Status](https://github.com/SaremS/polynomial_boosting/actions/workflows/ctest.yml/badge.svg?branch=main)](https://github.com/SaremS/polynomial_boosting/actions/workflows/ctest.yml?query=branch%3Amain)
+[![Test Status](https://github.com/SaremS/polynomial_boosting/actions/workflows/ctest.yml/badge.svg?branch=master)](https://github.com/SaremS/polynomial_boosting/actions/workflows/ctest.yml?query=branch%3Amaster)
 
 Gradient Boosting Regression with polynomial CART stumps. 
 Each Boosting component fits a polynomial regression (currently only linear) instead of a flat line.
