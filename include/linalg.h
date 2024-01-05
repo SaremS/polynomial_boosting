@@ -18,6 +18,7 @@ public:
 	Matrix();
 	Matrix(std::vector<std::vector<double>> input);
 	Matrix(std::vector<double> input);
+	Matrix(double value, size_t n_rows, size_t n_cols); //fill matrix with value
 	Matrix(Eigen::MatrixXd input);
 
 	size_t get_n_rows() const;
@@ -34,6 +35,7 @@ public:
 	Matrix operator+(const Matrix &other) const;
 	friend Matrix operator*(const double &lhs, const Matrix &rhs);
     	friend Matrix operator*(const Matrix &lhs, const double &rhs);
+	friend Matrix operator*(const Matrix &lhs, const Matrix &rhs);
 	Matrix pow_elementwise(const double &exponent) const;
 	double sum() const;
 

@@ -16,6 +16,7 @@ private:
 
 	int min_obs_per_leaf;
 	int n_trees;
+	int n_features;
 public:
 	GradientBoosting(
 			double learning_rate = 0.1,
@@ -40,6 +41,11 @@ public:
 		min_obs_per_leaf(min_obs_per_leaf){};
 	void fit(const Matrix &X, const Matrix &y);
 	Matrix predict(const Matrix &X) const;
+	std::vector<double> get_feature_importances() const;
+	std::vector<double> get_losses_at_head() const;
+	std::vector<double> get_weighted_node_losses() const;
+
+	int get_n_trees() const;
 	
 	void fit_eigen(const Eigen::MatrixXd &X, const Eigen::MatrixXd &y) {
 		Matrix X_matrix(X);

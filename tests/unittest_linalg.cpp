@@ -29,6 +29,19 @@ TEST(testlinalg, readmat_from_vec_of_vec) {
 	EXPECT_EQ(comparemat, testmat);
 }
 
+TEST(testlinalg, readmat_fromvalue) {
+	Matrix testmat = Matrix(1.0, 3, 1);	
+
+	std::vector<std::vector<double>> target = {
+		{1.0},
+		{1.0},
+		{1.0}
+    	};
+	Matrix comparemat = Matrix(target);
+
+	EXPECT_EQ(comparemat, testmat);
+}
+
 TEST(testlinalg, transpose_vec) {
 	std::vector<double> vals = {1.0,2.0,3.0};
 	Matrix testmat = Matrix(vals);	
@@ -196,7 +209,29 @@ TEST(testlinalg, addition) {
 	EXPECT_EQ(leftmat + rightmat, expmat);
 }
 
-TEST(testlinalg, multiplication) {
+TEST(testlinalg, element_wise_multiplication) {
+	std::vector<std::vector<double>> left = {
+        	{1.0, 2.0},
+		{3.0, 4.0}
+    	};
+	Matrix leftmat = Matrix(left);
+
+	std::vector<std::vector<double>> right = {
+        	{2.0, 3.0},
+		{4.0, 5.0}
+    	};
+	Matrix rightmat = Matrix(right);
+
+	std::vector<std::vector<double>> expected = { 
+		{2.0, 6.0},
+		{12.0, 20.0}
+    	};
+	Matrix expmat = Matrix(expected);
+
+	EXPECT_EQ(leftmat * rightmat, expmat);
+}
+
+TEST(testlinalg, scalar_multiplication) {
 	std::vector<std::vector<double>> left = {
         	{1.0, 2.0},
 		{3.0, 4.0}

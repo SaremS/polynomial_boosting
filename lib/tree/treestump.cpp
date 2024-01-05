@@ -19,6 +19,9 @@ void TreeStump::fit(const Matrix &X, const Matrix &y) {
 		return this->loss_function->loss(prediction, actual);
 	};
 
+	Matrix loss_minimizer = this->loss_function->minimizer_matrix(y);
+	this->loss_at_head = apply_binary(loss_minimizer, 0, y, 0, loss_lambda).sum() / n_samples;
+
 	for (int feature = 0; feature < n_features; feature++) {
 		for (int sample = 0; sample < n_samples; sample++) {
 			double split_value = X.get_element_at(sample, feature);
@@ -49,7 +52,7 @@ void TreeStump::fit(const Matrix &X, const Matrix &y) {
 			double loss_left = apply_binary(pred_left, 0, y_left, 0, loss_lambda).sum();
 			double loss_right = apply_binary(pred_right, 0, y_right, 0, loss_lambda).sum();
 
-			double loss = loss_left + loss_right;
+			double loss = (loss_left + loss_right)/n_samples;
 
 			if (loss < best_loss) {
 				best_loss = loss;
@@ -67,6 +70,7 @@ void TreeStump::fit(const Matrix &X, const Matrix &y) {
 
 	this->left_model = best_left_model;
 	this->right_model = best_right_model;
+	this->weighted_node_loss = best_loss;
 
 	best_left_model = nullptr;
 	best_right_model = nullptr;
@@ -93,4 +97,20 @@ Matrix TreeStump::predict(const Matrix &X) const {
 	Matrix y_pred_mat = Matrix(y_pred);
 
 	return y_pred_mat;
+}
+
+int TreeStump::get_split_feature() const {
+	return this->split_feature;
+}
+
+double TreeStump::get_feature_importance() const {
+	return this->loss_at_head - this->weighted_node_loss;
+}
+
+double TreeStump::get_loss_at_head() const {
+	return this->loss_at_head;
+}
+
+double TreeStump::get_weighted_node_loss() const {
+	return this->weighted_node_loss;
 }
