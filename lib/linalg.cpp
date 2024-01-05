@@ -42,6 +42,21 @@ Matrix::Matrix(std::vector<double> input) {
 	matrix = mat;
 }
 
+Matrix::Matrix(double value, size_t n_rows, size_t n_cols) {
+	this->n_rows = n_rows;
+	this->n_cols = n_cols;
+
+	Eigen::MatrixXd mat(n_rows, n_cols);
+
+	for (size_t i=0; i<n_rows; i++) {
+		for(size_t j=0; j<n_cols; j++) {
+			mat(i,j) = value;
+		}
+	}
+
+	matrix = mat;
+}
+
 Matrix::Matrix(Eigen::MatrixXd input) {
 	n_rows = static_cast<size_t>(input.rows());
 	n_cols = static_cast<size_t>(input.cols());
@@ -90,11 +105,16 @@ Matrix Matrix::operator+(const Matrix &other) const {
 }
 
 Matrix operator*(const double &lhs, const Matrix &rhs) {
-    return Matrix(rhs.matrix * lhs);
+    	return Matrix(rhs.matrix * lhs);
 }
 
 Matrix operator*(const Matrix &lhs, const double &rhs) {
-    return Matrix(lhs.matrix * rhs);
+    	return Matrix(lhs.matrix * rhs);
+}
+
+Matrix operator*(const Matrix &lhs, const Matrix &rhs) {
+	Eigen::MatrixXd result = lhs.matrix.array() * rhs.matrix.array();
+    	return Matrix(result);
 }
 
 Matrix Matrix::pow_elementwise(const double &exponent) const {

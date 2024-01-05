@@ -17,6 +17,9 @@ private:
 
 	double lambda_regularization;
 
+	double loss_at_head;
+	double weighted_node_loss;
+
 	RegressionModel* left_model;
 	RegressionModel* right_model;
 
@@ -40,6 +43,10 @@ public:
 		right_model(nullptr){};
 	void fit(const Matrix &X, const Matrix &y);
 	Matrix predict(const Matrix &X) const;
+	int get_split_feature() const;
+	double get_feature_importance() const;
+	double get_loss_at_head() const;
+	double get_weighted_node_loss() const;
 	
 	void fit_eigen(const Eigen::MatrixXd &X, const Eigen::MatrixXd &y) {
 		Matrix X_matrix(X);

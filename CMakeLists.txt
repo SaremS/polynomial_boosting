@@ -57,6 +57,8 @@ add_executable(
 	include/loss_functions/loss_function.h
 	include/loss_functions/quadratic_loss.h
 	lib/loss_functions/quadratic_loss.cpp
+	include/linalg.h
+	lib/linalg.cpp
 	tests/unittest_quadratic_loss.cpp
 )
 
