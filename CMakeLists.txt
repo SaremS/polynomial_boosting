@@ -34,6 +34,8 @@ pybind11_add_module(
 	lib/loss_functions/quadratic_loss.cpp
 	lib/regression_models/linear_regression_model.cpp
 	lib/gradient_boosting/gradient_boosting.cpp
+	lib/gradient_boosting/goss_sampler.cpp
+	lib/seedable_rng.cpp
 )
 
 target_link_libraries(polynomial_boosting PRIVATE Eigen3::Eigen)
@@ -97,6 +99,10 @@ add_executable(
 	include/loss_functions/loss_function.h
 	include/loss_functions/quadratic_loss.h
 	lib/loss_functions/quadratic_loss.cpp
+	include/seedable_rng.h
+	lib/seedable_rng.cpp
+	include/gradient_boosting/goss_sampler.h
+	lib/gradient_boosting/goss_sampler.cpp
 	tests/unittest_treestump.cpp
 )
 
@@ -116,6 +122,10 @@ add_executable(
 	lib/loss_functions/quadratic_loss.cpp
 	include/gradient_boosting/gradient_boosting.h
 	lib/gradient_boosting/gradient_boosting.cpp
+	include/seedable_rng.h
+	lib/seedable_rng.cpp
+	include/gradient_boosting/goss_sampler.h
+	lib/gradient_boosting/goss_sampler.cpp
 	tests/unittest_treestump.cpp
 )
 

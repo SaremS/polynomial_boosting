@@ -54,7 +54,14 @@ public:
 
 	Matrix replicate(int const &rows, int const &cols) const;
 	Matrix get_row(int const &row) const;
-	
+
+	Matrix get_rows_by_other_col_rank(
+			Matrix const &other,
+			int const &col,
+			int const &N) const;
+
+	Matrix append_rows(Matrix const &other) const;
+	Matrix sample_rows(int const &N, int const &seed) const;
 
 };
 
@@ -64,4 +71,13 @@ Matrix apply_binary(
 		Matrix const &right,
 		int const &rightcol,
 		std::function<double(double,double)> const &fun);
+
+Matrix apply_triary(
+		Matrix const &left,
+		int const &leftcol,
+		Matrix const &middle,
+		int const &middlecol,
+		Matrix const &right,
+		int const &rightcol,
+		std::function<double(double,double,double)> const &fun);
 #endif

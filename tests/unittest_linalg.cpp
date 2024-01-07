@@ -383,3 +383,49 @@ TEST(testlinalg, get_row) {
 
 	EXPECT_EQ(targmat.get_row(1), expmat);
 }
+
+TEST(testlinalg, get_rows_by_other_col_rank) {
+	std::vector<std::vector<double>> target = {
+		{1.0, 2.0},
+		{3.0, 4.0},
+		{5.0, 6.0}
+    	};
+	Matrix targmat = Matrix(target);
+
+	std::vector<std::vector<double>> other = {
+		{1.0},
+		{2.0},
+		{3.0}
+    	};
+	Matrix othermat = Matrix(other);
+
+	std::vector<std::vector<double>> expected = {
+		{5.0, 6.0},
+		{3.0, 4.0}
+    	};
+	Matrix expmat = Matrix(expected);
+
+	EXPECT_EQ(targmat.get_rows_by_other_col_rank(othermat, 0, 2), expmat);
+}
+
+TEST(testlinalg, append_rows) {
+	std::vector<std::vector<double>> target = {
+		{1.0, 2.0},
+		{3.0, 4.0},
+    	};
+	Matrix targmat = Matrix(target);
+
+	std::vector<std::vector<double>> other = {
+		{5.0, 6.0}
+    	};
+	Matrix othermat = Matrix(other);
+
+	std::vector<std::vector<double>> expected = {
+		{1.0, 2.0},
+		{3.0, 4.0},
+		{5.0, 6.0}
+    	};
+	Matrix expmat = Matrix(expected);
+
+	EXPECT_EQ(targmat.append_rows(othermat), expmat);
+}

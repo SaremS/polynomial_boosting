@@ -42,6 +42,7 @@ public:
 		left_model(nullptr),
 		right_model(nullptr){};
 	void fit(const Matrix &X, const Matrix &y);
+	void fit_with_weights(const Matrix &X, const Matrix &y, const Matrix &weights);
 	Matrix predict(const Matrix &X) const;
 	int get_split_feature() const;
 	double get_feature_importance() const;
