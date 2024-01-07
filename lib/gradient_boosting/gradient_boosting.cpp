@@ -8,12 +8,14 @@
 #include "loss_functions/loss_function.h"
 #include "loss_functions/quadratic_loss.h"
 #include "tree/treestump.h"
+#include "seedable_rng.h"
+#include "gradient_boosting/goss_sampler.h"
 
 namespace py = pybind11;
 
 PYBIND11_MODULE(polynomial_boosting,m) {
 	py::class_<GradientBoosting>(m, "PolynomialBoostingModel")
-		.def(py::init<double, double,int, int>())
+		.def(py::init<double, double, int, int, double, double, int>())
 		.def("fit", &GradientBoosting::fit_eigen)
 		.def("predict", &GradientBoosting::predict_eigen)
 		.def("get_feature_importances", &GradientBoosting::get_feature_importances)
@@ -37,9 +39,14 @@ void GradientBoosting::fit(const Matrix &X, const Matrix &y) {
 		// Calculate the pseudo-residuals
 		Matrix y_pred = this->predict(X);
 		Matrix pseudo_residuals = apply_binary(y_pred, 0, y, 0, loss_lambda);
+
+		//Goss sampling
+		auto [X_goss, y_goss, w_goss] =
+			this->goss_sampler.sample(X, pseudo_residuals, this->rng.get_int(1, 999999));
+
 		// Fit a tree to the pseudo-residuals
 		TreeStump* new_tree = new TreeStump(this->loss_function, this->min_obs_per_leaf, this->lambda_regularization);
-		new_tree->fit(X, pseudo_residuals);
+		new_tree->fit_with_weights(X_goss, y_goss, w_goss);
 		this->trees.push_back(new_tree);
 	}
 }
@@ -56,7 +63,7 @@ std::vector<double> GradientBoosting::get_feature_importances() const {
 	std::vector<double> feature_importances(this->n_features, 0.0);
 	double total_importance = 0.0;
 
-	for (int i=0; i<this->trees.size(); i++) {
+	for (int i=0; i<this->n_features; i++) {
 		int tree_feature = this->trees[i]->get_split_feature();
 		double tree_importance = this->trees[i]->get_feature_importance();
 
@@ -64,11 +71,11 @@ std::vector<double> GradientBoosting::get_feature_importances() const {
 		total_importance += tree_importance;
 	}
 	
-	for (int i=0; i<this->trees.size(); i++) {
+	for (int i=0; i<this->n_features; i++) {
 		feature_importances[i] /= total_importance;
 	}
 
-	return feature_importances;
+	return feature_importances; 
 }
 
 std::vector<double> GradientBoosting::get_losses_at_head() const {

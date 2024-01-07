@@ -1,5 +1,7 @@
 #include <vector>
 #include <tuple>
+#include <algorithm>
+#include <cstdlib>
 
 #include <linalg.h>
 
@@ -208,6 +210,30 @@ Matrix apply_binary(
 	return Matrix(result);
 }
 
+Matrix apply_triary(
+		Matrix const &left,
+		int const &leftcol,
+		Matrix const &middle,
+		int const &middlecol,
+		Matrix const &right,
+		int const &rightcol,
+		std::function<double(double,double,double)> const &fun) {
+	
+	int n_rows = left.get_n_rows();
+
+	std::vector<double> result;
+
+	for (int i=0; i<n_rows; i++) {
+		double leftval = left.get_element_at(i, leftcol);
+		double middleval = middle.get_element_at(i, middlecol);
+		double rightval = right.get_element_at(i, rightcol);
+
+		result.push_back(fun(leftval, middleval, rightval));
+	}
+
+	return Matrix(result);
+}
+
 Matrix Matrix::replicate(int const &rows, int const &cols) const {
 	Matrix result = Matrix(this->matrix.replicate(rows, cols));
 	return result;
@@ -217,3 +243,58 @@ Matrix Matrix::get_row(int const &row) const {
 	Matrix result = Matrix(this->matrix.row(row).eval());
 	return result;
 }
+
+Matrix Matrix::get_rows_by_other_col_rank(
+		Matrix const &other,
+		int const &col,
+		int const &N) const {
+	
+	Eigen::MatrixXd target = this->matrix;
+	Eigen::MatrixXd ranker = other.get_as_eigen().col(col);
+	
+
+    	// Create a vector of indices and partially sort to find top N indices
+    	std::vector<std::pair<double, int> > valueIndexPairs;
+    	for (int i = 0; i < ranker.rows(); ++i) {
+        	valueIndexPairs.push_back(std::make_pair(ranker(i, 0), i));
+    	}
+
+    	std::partial_sort(valueIndexPairs.begin(), valueIndexPairs.begin() + N, valueIndexPairs.end(), std::greater<std::pair<double, int> >());
+
+    	// Extract the corresponding rows from the target matrix
+    	Eigen::MatrixXd result(N, target.cols());
+    	for (int i = 0; i < N; ++i) {
+        	int index = valueIndexPairs[i].second;
+        	result.row(i) = target.row(index);
+    	}
+
+	return Matrix(result);
+}
+
+Matrix Matrix::append_rows(Matrix const &other) const {
+	Eigen::MatrixXd result(this->n_rows + other.get_n_rows(), this->n_cols);
+
+	result << this->matrix, other.get_as_eigen();
+
+	return Matrix(result);
+}
+
+Matrix Matrix::sample_rows(int const &N, int const &seed) const {
+	srand(seed);
+
+	std::vector<int> indices;
+
+	for (int i=0; i<this->n_rows; i++) {
+		indices.push_back(i);
+	}
+
+	std::random_shuffle(indices.begin(), indices.end());
+
+    	Eigen::MatrixXd sampledMat(N, this->n_cols);
+    	for (int i = 0; i < N; ++i) {
+        	sampledMat.row(i) = this->get_row(indices[i]).get_as_eigen().row(0);
+    	}
+
+	return Matrix(sampledMat);
+}
+

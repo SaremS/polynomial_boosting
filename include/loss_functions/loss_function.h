@@ -11,6 +11,10 @@ public:
 	virtual double first_derivative(double prediction, double actual) = 0;
 	virtual double second_derivative(double prediction, double actual) = 0;
 
+	virtual double weighted_loss(double prediction, double actual, double weight) {
+		return weight * this->loss(prediction, actual);
+	}
+
 	// Returns the minimizing value(s) of the loss function
 	// for a given target matrix as a matrix of the same size
 	// (i.e. the minimizer(s) are repeated N times)

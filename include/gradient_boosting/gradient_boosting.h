@@ -2,10 +2,13 @@
 #define GRADIENT_BOOSTING_H
 
 #include <vector>
+#include <Eigen/Dense>
 
 #include "loss_functions/loss_function.h"
 #include "loss_functions/quadratic_loss.h"
 #include "tree/treestump.h"
+#include "seedable_rng.h"
+#include "goss_sampler.h"
 
 class GradientBoosting {
 private:
@@ -18,28 +21,41 @@ private:
 	int min_obs_per_leaf;
 	int n_trees;
 	int n_features;
+
+	GossSampler goss_sampler;
+	SeedableRNG rng;
 public:
 	GradientBoosting(
 			double learning_rate = 0.1,
 			double lambda_regularization = 0.0,
 			int n_trees = 100,
-			int min_obs_per_leaf = 5): 
+			int min_obs_per_leaf = 5,
+			double goss_alpha = 0.5,
+			double goss_beta = 0.5,
+			int seed = 0):
 		loss_function(new QuadraticLoss()),
 		learning_rate(learning_rate),
 		lambda_regularization(lambda_regularization),
 		n_trees(n_trees),
-		min_obs_per_leaf(min_obs_per_leaf){};
+		min_obs_per_leaf(min_obs_per_leaf),
+		goss_sampler(goss_alpha, goss_beta),
+		rng(seed) {};
 	GradientBoosting(
 			LossFunction* loss_function,
 			double learning_rate = 0.1,
 			double lambda_regularization = 0.0,
 			int n_trees = 100,
-			int min_obs_per_leaf = 1): 
+			int min_obs_per_leaf = 1,
+			double goss_alpha = 0.5,
+			double goss_beta = 0.5,
+			int seed = 0): 
 		loss_function(loss_function),
 		learning_rate(learning_rate),
 		lambda_regularization(lambda_regularization),
 		n_trees(n_trees),
-		min_obs_per_leaf(min_obs_per_leaf){};
+		min_obs_per_leaf(min_obs_per_leaf),
+		goss_sampler(goss_alpha, goss_beta),
+		rng(seed) {};
 	void fit(const Matrix &X, const Matrix &y);
 	Matrix predict(const Matrix &X) const;
 	std::vector<double> get_feature_importances() const;
