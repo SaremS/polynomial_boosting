@@ -82,6 +82,8 @@ add_executable(
 	include/regression_models/regression_model.h
 	include/regression_models/linear_regression_model.h
 	lib/regression_models/linear_regression_model.cpp
+	include/regression_models/fast_linear_regression.h
+	lib/regression_models/fast_linear_regression.cpp
 	tests/unittest_linear_regression_model.cpp
 )
 
