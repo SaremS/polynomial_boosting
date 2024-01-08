@@ -57,7 +57,9 @@ public:
 		goss_sampler(goss_alpha, goss_beta),
 		rng(seed) {};
 	void fit(const Matrix &X, const Matrix &y);
+	void fit_fast(const Matrix &X, const Matrix &y);
 	Matrix predict(const Matrix &X) const;
+	Matrix predict_fast(const Matrix &X) const;
 	std::vector<double> get_feature_importances() const;
 	std::vector<double> get_losses_at_head() const;
 	std::vector<double> get_weighted_node_losses() const;
@@ -70,11 +72,26 @@ public:
 		this->fit(X_matrix, y_matrix);
 	}
 
+	void fit_fast_eigen(const Eigen::MatrixXd &X, const Eigen::MatrixXd &y) {
+		Matrix X_matrix(X);
+		Matrix y_matrix(y);
+		this->fit_fast(X_matrix, y_matrix);
+	}
+
 	Eigen::MatrixXd predict_eigen(const Eigen::MatrixXd &X) const {
 		Matrix X_matrix(X);
 		Matrix y_matrix = this->predict(X_matrix);
 		return y_matrix.get_as_eigen();
 	}
+
+	Eigen::MatrixXd predict_fast_eigen(const Eigen::MatrixXd &X) const {
+		Matrix X_matrix(X);
+		Matrix y_matrix = this->predict_fast(X_matrix);
+		return y_matrix.get_as_eigen();
+	}
+
+
+
 	// Class destructor, deletes all pointers
 	~GradientBoosting() {
 		delete loss_function;

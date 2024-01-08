@@ -33,6 +33,7 @@ pybind11_add_module(
 	lib/linalg.cpp
 	lib/loss_functions/quadratic_loss.cpp
 	lib/regression_models/linear_regression_model.cpp
+	lib/regression_models/fast_linear_regression.cpp
 	lib/gradient_boosting/gradient_boosting.cpp
 	lib/gradient_boosting/goss_sampler.cpp
 	lib/seedable_rng.cpp
@@ -96,6 +97,8 @@ add_executable(
 	include/regression_models/regression_model.h
 	include/regression_models/linear_regression_model.h
 	lib/regression_models/linear_regression_model.cpp
+	include/regression_models/fast_linear_regression.h
+	lib/regression_models/fast_linear_regression.cpp
 	include/tree/treestump.h
 	lib/tree/treestump.cpp
 	include/loss_functions/loss_function.h
@@ -117,6 +120,8 @@ add_executable(
 	include/regression_models/regression_model.h
 	include/regression_models/linear_regression_model.h
 	lib/regression_models/linear_regression_model.cpp
+	include/regression_models/fast_linear_regression.h
+	lib/regression_models/fast_linear_regression.cpp
 	include/tree/treestump.h
 	lib/tree/treestump.cpp
 	include/loss_functions/loss_function.h

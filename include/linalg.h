@@ -56,6 +56,7 @@ public:
 
 	Matrix replicate(int const &rows, int const &cols) const;
 	Matrix get_row(int const &row) const;
+	Matrix get_row_range(int const &start, int const &end) const;
 
 	//largest to smallest
 	Matrix get_rows_by_other_col_rank(

@@ -252,6 +252,11 @@ Matrix Matrix::get_row(int const &row) const {
 	return result;
 }
 
+Matrix Matrix::get_row_range(int const &start, int const &end) const {
+	Matrix result = Matrix(this->matrix.block(start, 0, end - start, this->n_cols));
+	return result;
+}
+
 Matrix Matrix::get_rows_by_other_col_rank(
 		Matrix const &other,
 		int const &col,

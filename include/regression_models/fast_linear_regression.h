@@ -23,6 +23,12 @@ private:
 public:
 	FastLinearRegression(double lambda_regularization = 0.0):
 		lambda_regularization(lambda_regularization),
+		sum_xy(0.0),
+		sum_x(0.0),
+		sum_y(0.0),
+		sum_x_sq(0.0),
+		sum_sq_x(0.0),
+		n_obs(0.0),
 		is_trained(false) {};
 
 	void fit(const Matrix &X, const Matrix &y);
