@@ -52,7 +52,9 @@ Matrix GossSampler::make_loss_weights(const int &alpha_n_obs, const int &beta_n_
 	double beta_weight = (1.0 - this->alpha) / this->beta; 
 
 	for (int i=0; i<beta_n_obs; i++) {
-		weights.push_back(beta_weight);
+		//weights.push_back(beta_weight);
+		//test to see if this is better
+		weights.push_back(1.0);
 	}
 
 	return Matrix(weights);

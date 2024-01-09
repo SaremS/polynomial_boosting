@@ -1,5 +1,4 @@
 #include <vector>
-#include <iostream>
 
 #include "regression_models/fast_linear_regression.h"
 #include "linalg.h"
