@@ -113,6 +113,8 @@ add_executable(
 	lib/regression_models/fast_linear_regression.cpp
 	include/tree/treestump.h
 	lib/tree/treestump.cpp
+	include/tree/data_iterator.h
+	lib/tree/sorting_data_iterator.cpp
 	include/loss_functions/loss_function.h
 	include/loss_functions/quadratic_loss.h
 	lib/loss_functions/quadratic_loss.cpp
@@ -136,6 +138,8 @@ add_executable(
 	lib/regression_models/fast_linear_regression.cpp
 	include/tree/treestump.h
 	lib/tree/treestump.cpp
+	include/tree/data_iterator.h
+	lib/tree/sorting_data_iterator.cpp
 	include/loss_functions/loss_function.h
 	include/loss_functions/quadratic_loss.h
 	lib/loss_functions/quadratic_loss.cpp

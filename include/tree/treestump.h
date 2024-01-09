@@ -23,6 +23,9 @@ private:
 	RegressionModel* left_model;
 	RegressionModel* right_model;
 
+	std::function<double(double, double)> get_loss_lambda() const;
+	std::function<double(double, double, double)> get_weighted_loss_lambda() const;	
+
 public:
 	TreeStump(
 			int min_obs_per_leaf,

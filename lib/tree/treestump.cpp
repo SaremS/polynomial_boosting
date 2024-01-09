@@ -1,4 +1,5 @@
 #include <iostream>
+#include <functional>
 
 #include "loss_functions/loss_function.h"
 #include "regression_models/regression_model.h"
@@ -6,7 +7,21 @@
 #include "regression_models/fast_linear_regression.h"
 #include "linalg.h"
 #include "tree/treestump.h"
+#include "tree/data_iterator.h"
 
+
+
+std::function<double(double, double)> TreeStump::get_loss_lambda() const {
+	return [this](double prediction, double actual) {
+		return this->loss_function->loss(prediction, actual);
+	};
+}
+
+std::function<double(double, double, double)> TreeStump::get_weighted_loss_lambda() const {
+	return [this](double prediction, double actual, double weight) {
+		return this->loss_function->weighted_loss(prediction, actual, weight);
+	};
+}
 
 void TreeStump::fit(const Matrix &X, const Matrix &y) {
 
@@ -200,33 +215,33 @@ void TreeStump::fit_fast_with_weights(const Matrix &X, const Matrix &y, const Ma
 	int n_samples = X.get_n_rows();	
 	int min_obs_per_leaf = this->min_obs_per_leaf;
 
-	double best_loss = INFINITY;
 	FastLinearRegression* best_left_model = new FastLinearRegression(this->lambda_regularization);
 	FastLinearRegression* best_right_model = new FastLinearRegression(this->lambda_regularization);
 
-	auto loss_lambda = [this](double prediction, double actual, double weight) {
-		return this->loss_function->weighted_loss(prediction, actual, weight);
-	};
+	auto loss_lambda = this->get_weighted_loss_lambda(); 
+	double best_loss = INFINITY;
 
 	Matrix loss_minimizer = this->loss_function->minimizer_matrix(y);
 	this->loss_at_head = apply_triary(loss_minimizer, 0, y, 0, weights, 0, loss_lambda).sum() / n_samples;
 
 	for (int feature = 0; feature < n_features; feature++) {
 
-		Matrix Xcol = X.get_column(feature);
+		SortingDataIterator data_iterator = SortingDataIterator(
+				X,
+				y,
+				weights,
+				feature,this->min_obs_per_leaf
+		);
 
-		Matrix ysort = y.get_rows_by_other_col_rank(-Xcol, 0, n_samples);
-		Matrix Xsort = Xcol.get_rows_by_other_col_rank(-Xcol, 0, n_samples);
-		Matrix wsort = weights.get_rows_by_other_col_rank(-Xcol, 0, n_samples);
+		DataSplit* first_split = data_iterator.next();
 
-		int first_split_index = min_obs_per_leaf - 1;
-		double split_value = Xsort.get_element_at(first_split_index, 0);
+		if (first_split == nullptr) {
+			continue;
+		}
+		auto [X_left, y_left, w_left, X_right, y_right, w_right, X_split, y_split] = *first_split;
+		delete first_split;
 
-		Matrix X_left = Xsort.get_row_range(0, first_split_index + 1);
-		Matrix X_right = Xsort.get_row_range(first_split_index + 1, n_samples);
-		
-		Matrix y_left = ysort.get_row_range(0, first_split_index + 1);
-		Matrix y_right = ysort.get_row_range(first_split_index + 1, n_samples);
+		double split_value = X_split.get_element_at(0, 0);
 
 		FastLinearRegression the_left_model = FastLinearRegression(this->lambda_regularization);
 		FastLinearRegression the_right_model = FastLinearRegression(this->lambda_regularization);
@@ -237,8 +252,10 @@ void TreeStump::fit_fast_with_weights(const Matrix &X, const Matrix &y, const Ma
 		Matrix pred_left = the_left_model.predict(X_left);
 		Matrix pred_right = the_right_model.predict(X_right);
 
-		double loss_left = apply_triary(pred_left, 0, y_left, 0, wsort, 0, loss_lambda).sum();
-		double loss_right = apply_triary(pred_right, 0, y_right, 0, wsort, 0, loss_lambda).sum();
+		Matrix w_sort = w_left.append_rows(w_right);
+
+		double loss_left = apply_triary(pred_left, 0, y_left, 0, w_sort, 0, loss_lambda).sum();
+		double loss_right = apply_triary(pred_right, 0, y_right, 0, w_sort, 0, loss_lambda).sum();
 
 		double loss = (loss_left + loss_right)/n_samples;
 
@@ -254,30 +271,26 @@ void TreeStump::fit_fast_with_weights(const Matrix &X, const Matrix &y, const Ma
 			best_right_model = new FastLinearRegression(the_right_model);
 		}
 
-		for (int sample = min_obs_per_leaf; sample < n_samples - min_obs_per_leaf; sample++) {
-			// skip if split value did not change
-			if (Xsort.get_element_at(sample, 0) == Xsort.get_element_at(sample-1, 0)) {
-				continue;
+		while (true) {
+			DataSplit* split = data_iterator.next();
+			if (split == nullptr) {
+				break;
 			}
-			split_value = Xsort.get_element_at(sample, 0);
+			auto [X_left, y_left, w_left, X_right, y_right, w_right, X_split, y_split] = *split;
+			delete split;
 
-			Matrix X_split = Xsort.get_row(sample);
-			Matrix y_split = ysort.get_row(sample);
+			split_value = X_split.get_element_at(0, 0);
 
-			Matrix X_left = Xsort.get_row_range(0, sample+1);
-			Matrix X_right = Xsort.get_row_range(sample+1, n_samples);
-
-			Matrix y_left = ysort.get_row_range(0, sample+1);
-			Matrix y_right = ysort.get_row_range(sample+1, n_samples);
-			
 			the_left_model.update_coefficients_add(X_split, y_split);
 			the_right_model.update_coefficients_drop(X_split, y_split);
 
 			Matrix pred_left = the_left_model.predict(X_left);
 			Matrix pred_right = the_right_model.predict(X_right);
+			
+			Matrix w_sort = w_left.append_rows(w_right);
 
-			double loss_left = apply_triary(pred_left, 0, y_left, 0, wsort, 0, loss_lambda).sum();
-			double loss_right = apply_triary(pred_right, 0, y_right, 0, wsort, 0, loss_lambda).sum();
+			double loss_left = apply_triary(pred_left, 0, y_left, 0, w_sort, 0, loss_lambda).sum();
+			double loss_right = apply_triary(pred_right, 0, y_right, 0, w_sort, 0, loss_lambda).sum();
 
 			double loss = (loss_left + loss_right)/n_samples;
 

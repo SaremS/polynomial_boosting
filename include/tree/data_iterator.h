@@ -14,6 +14,9 @@ struct DataSplit {
 	Matrix X_right;
 	Matrix y_right;
 	Matrix w_right;
+
+	Matrix X_split;
+	Matrix y_split;
 };
 
 
@@ -21,7 +24,7 @@ class DataIterator {
 private:
 	int feature_index; //might not be needed
 
-	virtual DataSplit next_internal() const = 0;
+	virtual DataSplit* next_internal() const = 0;
 
 protected:
 	Matrix X;
@@ -43,14 +46,13 @@ public:
 		current_index(0) {};
 	
 
-	DataSplit next() {
-		DataSplit split = this->next_internal();
-		this->current_index++;
-		
+	DataSplit* next() {
 		if (current_index >= this->n_samples - this->min_samples_split) {
-			this->reset();
+			return nullptr;
 		}
-
+		
+		DataSplit* split = this->next_internal();
+		this->current_index++;
 		return split;
 	};	
 
@@ -63,15 +65,19 @@ public:
 	};
 
 	virtual DataSplit first() const = 0;
+
+	virtual ~DataIterator() {};
 };
 
 
 class SortingDataIterator : public DataIterator {
 private:
-	DataSplit next_internal() const;
+	DataSplit* next_internal() const;
 public:
 	SortingDataIterator(Matrix X, Matrix y, Matrix weights, int feature_index, int min_samples_split);
 	DataSplit first() const;
+	//destructor inherited from DataIterator
+	~SortingDataIterator() {};
 };
 
 
