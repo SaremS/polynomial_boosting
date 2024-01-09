@@ -72,6 +72,10 @@ void TreeStump::fit(const Matrix &X, const Matrix &y) {
 
 			double loss = (loss_left + loss_right)/n_samples;
 
+			if (loss*loss < 1e-9) {
+				loss = 0.0;
+			}
+
 			if (loss < best_loss) {
 				best_loss = loss;
 				this->split_feature = feature;
@@ -143,6 +147,10 @@ void TreeStump::fit_with_weights(const Matrix &X, const Matrix &y, const Matrix 
 			double loss_right = apply_triary(pred_right, 0, y_right, 0, weights, 0, loss_lambda).sum();
 
 			double loss = (loss_left + loss_right)/n_samples;
+
+			if (loss*loss < 1e-9) {
+				loss = 0.0;
+			}
 
 			if (loss < best_loss) {
 				best_loss = loss;

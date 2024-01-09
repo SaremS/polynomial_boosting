@@ -13,8 +13,6 @@ DataSplit* SortingDataIterator::next_internal() const {
 	split->X_split = this->X.get_row(this->min_samples_split + this->current_index - 1);
 	split->y_split = this->y.get_row(this->min_samples_split + this->current_index - 1);
 
-
-
 	return split;
 };
 

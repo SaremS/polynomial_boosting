@@ -38,7 +38,7 @@ TEST(testdataiterators, simple) {
 
 	DataSplit* split2;
 
-	for (int i=0; i<9; i++) {
+	for (int i=0; i<8; i++) {
 		split2 = data_iterator->next();
 
 		EXPECT_EQ(split2->X_left.get_n_rows(), 1 + i);
