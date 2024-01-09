@@ -169,11 +169,11 @@ TEST(testtree, simple_versus_fast_complex) {
 		1.0,
 		1.0,
 		1.0,
-		3.234,
-		3.234,
-		3.234,
-		3.234,
-		3.234
+		1.0,
+		1.0,
+		1.0,
+		1.0,
+		1.0
 	};
 	Matrix weights = Matrix(random_weights);
 

@@ -182,6 +182,46 @@ TEST(testregression, comp_regularized_normal_fast_regression) {
 	EXPECT_TRUE(mse < 1e-6);
 }
 
+TEST(testregression, verify_fast_ols_sse) {
+	std::vector<double> inputs = {
+		2.0,
+		3.0,
+		4.0,
+		5.0,
+		6.0,
+		7.0,
+		8.0,
+		9.0,
+		10.0,
+		11.0
+	};
+	Matrix X = Matrix(inputs);
+
+	std::vector<double> targets = {
+		2.0,
+		2.0,
+		6.4,
+		5.0,
+		6.0,
+		7.0,
+		8.2,
+		9.0,
+		11.0,
+		11.5
+	};
+	Matrix y = Matrix(targets);
+
+	FastLinearRegression fast_model = FastLinearRegression(5.0);
+	fast_model.fit(X,y);
+
+	Matrix predictions_fast = fast_model.predict(X);
+
+	double mse_manual = 0.5*(y - predictions_fast).pow_elementwise(2.0).sum() / 10.0;
+	double mse_fast = 0.5*fast_model.get_ols_sse() / 10.0;
+
+	EXPECT_NEAR(mse_manual, mse_fast, 1e-9);
+}
+
 TEST(testregression, fast_regression_add) {
 	std::vector<double> full_inputs = {
 		2.0,

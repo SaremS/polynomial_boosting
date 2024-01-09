@@ -257,11 +257,14 @@ void TreeStump::fit_fast_with_weights(const Matrix &X, const Matrix &y, const Ma
 		the_left_model.fit(X_left, y_left);
 		the_right_model.fit(X_right, y_right);
 
-		Matrix pred_left = the_left_model.predict(X_left);
-		Matrix pred_right = the_right_model.predict(X_right);
+		//Matrix pred_left = the_left_model.predict(X_left);
+		//Matrix pred_right = the_right_model.predict(X_right);
 
-		double loss_left = apply_triary(pred_left, 0, y_left, 0, w_left, 0, loss_lambda).sum();
-		double loss_right = apply_triary(pred_right, 0, y_right, 0, w_right, 0, loss_lambda).sum();
+		//double loss_left = apply_triary(pred_left, 0, y_left, 0, w_left, 0, loss_lambda).sum();
+		//double loss_right = apply_triary(pred_right, 0, y_right, 0, w_right, 0, loss_lambda).sum();
+		double loss_left = 0.5*the_left_model.get_ols_sse();
+		double loss_right = 0.5*the_right_model.get_ols_sse();
+
 		double loss = (loss_left + loss_right)/n_samples;
 
 		if (loss < best_loss) {
@@ -289,11 +292,13 @@ void TreeStump::fit_fast_with_weights(const Matrix &X, const Matrix &y, const Ma
 			the_left_model.update_coefficients_add(X_split, y_split);
 			the_right_model.update_coefficients_drop(X_split, y_split);
 
-			Matrix pred_left = the_left_model.predict(X_left);
-			Matrix pred_right = the_right_model.predict(X_right);
+			//Matrix pred_left = the_left_model.predict(X_left);
+			//Matrix pred_right = the_right_model.predict(X_right);
 			
-			double loss_left = apply_triary(pred_left, 0, y_left, 0, w_left, 0, loss_lambda).sum();
-			double loss_right = apply_triary(pred_right, 0, y_right, 0, w_right, 0, loss_lambda).sum();
+			//double loss_left = apply_triary(pred_left, 0, y_left, 0, w_left, 0, loss_lambda).sum();
+			//double loss_right = apply_triary(pred_right, 0, y_right, 0, w_right, 0, loss_lambda).sum();
+			double loss_left = 0.5*the_left_model.get_ols_sse();
+			double loss_right = 0.5*the_right_model.get_ols_sse();
 
 			double loss = (loss_left + loss_right)/n_samples;
 

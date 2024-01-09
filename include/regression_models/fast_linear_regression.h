@@ -15,6 +15,7 @@ private:
 	double sum_y;
 	double sum_x_sq; //sum of x^2
 	double sum_sq_x; //sum of x, squared
+	double sum_y_sq; //sum of y^2
 	
 	double n_obs;
 
@@ -28,6 +29,7 @@ public:
 		sum_y(0.0),
 		sum_x_sq(0.0),
 		sum_sq_x(0.0),
+		sum_y_sq(0.0),
 		n_obs(0.0),
 		is_trained(false) {};
 
@@ -39,6 +41,8 @@ public:
 	void update_coefficients_drop(const Matrix &X, const Matrix &y);
 	Matrix predict(const Matrix &X) const;
 	Matrix get_coefficients() const;
+
+	double get_ols_sse() const; //sum of squared errors (without weights)
 };
 
 #endif
