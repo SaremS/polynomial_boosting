@@ -47,7 +47,7 @@ public:
 	
 
 	DataSplit* next() {
-		if (current_index >= this->n_samples - this->min_samples_split - 1) {
+		if (current_index >= this->n_samples - this->min_samples_split*2) {
 			return nullptr;
 		}
 		

@@ -30,6 +30,7 @@ FetchContent_MakeAvailable(pybind11)
 pybind11_add_module(
 	polynomial_boosting
 	lib/tree/treestump.cpp
+	lib/tree/sorting_data_iterator.cpp
 	lib/linalg.cpp
 	lib/loss_functions/quadratic_loss.cpp
 	lib/regression_models/linear_regression_model.cpp

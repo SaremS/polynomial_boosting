@@ -62,3 +62,41 @@ TEST(testdataiterators, simple) {
 	delete data_iterator;
 }
 
+TEST(testdataiterators, unsorted_inputs) {
+	std::vector<double> inputs = {
+		3.0,
+		2.0,
+		5.0,
+		4.0,
+		7.0,
+		6.0,
+		11.0,
+		9.0,
+		8.0,
+		10.0
+	};
+
+	Matrix X = Matrix(inputs);
+	Matrix y = Matrix(inputs);
+	Matrix weights = Matrix(inputs);
+
+	DataIterator* data_iterator = new SortingDataIterator(X, y, weights, 0, 1);
+
+	DataSplit split = data_iterator->first();
+
+	EXPECT_EQ(split.X_left.get_element_at(0,0), 2.0);
+	EXPECT_EQ(split.y_left.get_element_at(0,0), 2.0);
+	EXPECT_EQ(split.w_left.get_element_at(0,0), 2.0);
+
+	DataSplit* split2;
+
+	split2 = data_iterator->next();
+
+	EXPECT_EQ(split2->X_left.get_element_at(0,0), 2.0);
+	EXPECT_EQ(split2->y_left.get_element_at(0,0), 2.0);
+	EXPECT_EQ(split2->w_left.get_element_at(0,0), 2.0);
+
+	delete split2;
+	delete data_iterator;
+}
+

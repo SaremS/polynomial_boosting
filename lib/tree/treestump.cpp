@@ -1,4 +1,3 @@
-#include <iostream>
 #include <functional>
 
 #include "loss_functions/loss_function.h"
@@ -131,6 +130,7 @@ void TreeStump::fit_with_weights(const Matrix &X, const Matrix &y, const Matrix 
 			}
 
 			auto [y_left, y_right] = y.split_col_by_other_colval(0, X, feature, split_value);
+			auto [w_left, w_right] = weights.split_col_by_other_colval(0, X, feature, split_value);
 
 			X_left.prepend_ones();
 			X_right.prepend_ones();
@@ -143,8 +143,8 @@ void TreeStump::fit_with_weights(const Matrix &X, const Matrix &y, const Matrix 
 			Matrix pred_left = the_left_model.predict(X_left);
 			Matrix pred_right = the_right_model.predict(X_right);
 
-			double loss_left = apply_triary(pred_left, 0, y_left, 0, weights, 0, loss_lambda).sum();
-			double loss_right = apply_triary(pred_right, 0, y_right, 0, weights, 0, loss_lambda).sum();
+			double loss_left = apply_triary(pred_left, 0, y_left, 0, w_left, 0, loss_lambda).sum();
+			double loss_right = apply_triary(pred_right, 0, y_right, 0, w_right, 0, loss_lambda).sum();
 
 			double loss = (loss_left + loss_right)/n_samples;
 
@@ -233,12 +233,12 @@ void TreeStump::fit_fast_with_weights(const Matrix &X, const Matrix &y, const Ma
 	this->loss_at_head = apply_triary(loss_minimizer, 0, y, 0, weights, 0, loss_lambda).sum() / n_samples;
 
 	for (int feature = 0; feature < n_features; feature++) {
-
 		SortingDataIterator data_iterator = SortingDataIterator(
 				X,
 				y,
 				weights,
-				feature,this->min_obs_per_leaf
+				feature,
+				this->min_obs_per_leaf
 		);
 
 		DataSplit* first_split = data_iterator.next();
@@ -260,11 +260,8 @@ void TreeStump::fit_fast_with_weights(const Matrix &X, const Matrix &y, const Ma
 		Matrix pred_left = the_left_model.predict(X_left);
 		Matrix pred_right = the_right_model.predict(X_right);
 
-		Matrix w_sort = w_left.append_rows(w_right);
-
-		double loss_left = apply_triary(pred_left, 0, y_left, 0, w_sort, 0, loss_lambda).sum();
-		double loss_right = apply_triary(pred_right, 0, y_right, 0, w_sort, 0, loss_lambda).sum();
-
+		double loss_left = apply_triary(pred_left, 0, y_left, 0, w_left, 0, loss_lambda).sum();
+		double loss_right = apply_triary(pred_right, 0, y_right, 0, w_right, 0, loss_lambda).sum();
 		double loss = (loss_left + loss_right)/n_samples;
 
 		if (loss < best_loss) {
@@ -295,10 +292,8 @@ void TreeStump::fit_fast_with_weights(const Matrix &X, const Matrix &y, const Ma
 			Matrix pred_left = the_left_model.predict(X_left);
 			Matrix pred_right = the_right_model.predict(X_right);
 			
-			Matrix w_sort = w_left.append_rows(w_right);
-
-			double loss_left = apply_triary(pred_left, 0, y_left, 0, w_sort, 0, loss_lambda).sum();
-			double loss_right = apply_triary(pred_right, 0, y_right, 0, w_sort, 0, loss_lambda).sum();
+			double loss_left = apply_triary(pred_left, 0, y_left, 0, w_left, 0, loss_lambda).sum();
+			double loss_right = apply_triary(pred_right, 0, y_right, 0, w_right, 0, loss_lambda).sum();
 
 			double loss = (loss_left + loss_right)/n_samples;
 
