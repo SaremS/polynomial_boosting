@@ -209,6 +209,39 @@ TEST(testlinalg, addition) {
 	EXPECT_EQ(leftmat + rightmat, expmat);
 }
 
+TEST(testlinalg, scalar_addition) {
+	std::vector<std::vector<double>> left = {
+        	{1.0, 2.0},
+		{3.0, 4.0}
+    	};
+	Matrix leftmat = Matrix(left);
+
+	std::vector<std::vector<double>> expected = {
+        	{2.0, 3.0},
+		{4.0, 5.0}
+    	};
+	Matrix expmat = Matrix(expected);
+
+	EXPECT_EQ(1.0 + leftmat, expmat);
+}
+
+TEST(testlinalg, invert) {
+	std::vector<std::vector<double>> left = {
+        	{1.0, 2.0},
+		{3.0, 4.0}
+    	};
+
+	Matrix leftmat = Matrix(left);
+
+	std::vector<std::vector<double>> expected = {
+        	{-1.0, -2.0},
+		{-3.0, -4.0}
+    	};
+	Matrix expmat = Matrix(expected);
+
+	EXPECT_EQ(-leftmat, expmat);
+}
+
 TEST(testlinalg, element_wise_multiplication) {
 	std::vector<std::vector<double>> left = {
         	{1.0, 2.0},
@@ -428,4 +461,20 @@ TEST(testlinalg, append_rows) {
 	Matrix expmat = Matrix(expected);
 
 	EXPECT_EQ(targmat.append_rows(othermat), expmat);
+}
+
+TEST(testlinalg, pop_n) {
+	std::vector<std::vector<double>> target = {
+		{1.0, 2.0},
+		{3.0, 4.0},
+    	};
+	Matrix targmat = Matrix(target);
+
+
+	std::vector<std::vector<double>> expected = {
+		{3.0, 4.0},
+    	};
+	Matrix expmat = Matrix(expected);
+
+	EXPECT_EQ(targmat.pop_n_first_rows(1), expmat);
 }

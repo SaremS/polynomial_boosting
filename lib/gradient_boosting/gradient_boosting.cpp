@@ -18,6 +18,8 @@ PYBIND11_MODULE(polynomial_boosting,m) {
 		.def(py::init<double, double, int, int, double, double, int>())
 		.def("fit", &GradientBoosting::fit_eigen)
 		.def("predict", &GradientBoosting::predict_eigen)
+		.def("fit_fast", &GradientBoosting::fit_fast_eigen)
+		.def("predict_fast", &GradientBoosting::predict_fast_eigen)
 		.def("get_feature_importances", &GradientBoosting::get_feature_importances)
 		.def("get_losses_at_head", &GradientBoosting::get_losses_at_head)
 		.def("get_weighted_node_losses", &GradientBoosting::get_weighted_node_losses)
@@ -51,10 +53,45 @@ void GradientBoosting::fit(const Matrix &X, const Matrix &y) {
 	}
 }
 
+void GradientBoosting::fit_fast(const Matrix &X, const Matrix &y) {
+	// Initialize the first tree
+	this->initial_prediction = this->loss_function->minimizer_matrix(y).get_row(0);
+
+	auto loss_lambda = [this](double prediction, double actual) {
+		return this->loss_function->first_derivative(prediction, actual);
+	};
+
+	this->n_features = X.get_n_cols();
+	
+	// Fit the remaining trees
+	for (int i=0; i<this->n_trees; i++) {
+		// Calculate the pseudo-residuals
+		Matrix y_pred = this->predict_fast(X);
+		Matrix pseudo_residuals = apply_binary(y_pred, 0, y, 0, loss_lambda);
+
+		//Goss sampling
+		auto [X_goss, y_goss, w_goss] =
+			this->goss_sampler.sample(X, pseudo_residuals, this->rng.get_int(1, 999999));
+
+		// Fit a tree to the pseudo-residuals
+		TreeStump* new_tree = new TreeStump(this->loss_function, this->min_obs_per_leaf, this->lambda_regularization);
+		new_tree->fit_fast_with_weights(X_goss, y_goss, w_goss);
+		this->trees.push_back(new_tree);
+	}
+}
+
 Matrix GradientBoosting::predict(const Matrix &X) const {
 	Matrix y_pred = this->initial_prediction.replicate(X.get_n_rows(), 1);
 	for (int i=0; i<this->trees.size(); i++) {
 		y_pred = y_pred - this->learning_rate * this->trees[i]->predict(X);
+	}
+	return y_pred;
+}
+
+Matrix GradientBoosting::predict_fast(const Matrix &X) const {
+	Matrix y_pred = this->initial_prediction.replicate(X.get_n_rows(), 1);
+	for (int i=0; i<this->trees.size(); i++) {
+		y_pred = y_pred - this->learning_rate * this->trees[i]->predict_fast(X);
 	}
 	return y_pred;
 }

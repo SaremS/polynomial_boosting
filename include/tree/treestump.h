@@ -23,6 +23,9 @@ private:
 	RegressionModel* left_model;
 	RegressionModel* right_model;
 
+	std::function<double(double, double)> get_loss_lambda() const;
+	std::function<double(double, double, double)> get_weighted_loss_lambda() const;	
+
 public:
 	TreeStump(
 			int min_obs_per_leaf,
@@ -43,11 +46,17 @@ public:
 		right_model(nullptr){};
 	void fit(const Matrix &X, const Matrix &y);
 	void fit_with_weights(const Matrix &X, const Matrix &y, const Matrix &weights);
+	void fit_fast_with_weights(const Matrix &X, const Matrix &y, const Matrix &weights);
 	Matrix predict(const Matrix &X) const;
+	Matrix predict_fast(const Matrix &X) const;
 	int get_split_feature() const;
+	double get_split_value() const;
 	double get_feature_importance() const;
 	double get_loss_at_head() const;
 	double get_weighted_node_loss() const;
+
+	Matrix get_left_model_coefficients() const;
+	Matrix get_right_model_coefficients() const;
 	
 	void fit_eigen(const Eigen::MatrixXd &X, const Eigen::MatrixXd &y) {
 		Matrix X_matrix(X);

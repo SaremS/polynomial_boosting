@@ -30,9 +30,11 @@ FetchContent_MakeAvailable(pybind11)
 pybind11_add_module(
 	polynomial_boosting
 	lib/tree/treestump.cpp
+	lib/tree/sorting_data_iterator.cpp
 	lib/linalg.cpp
 	lib/loss_functions/quadratic_loss.cpp
 	lib/regression_models/linear_regression_model.cpp
+	lib/regression_models/fast_linear_regression.cpp
 	lib/gradient_boosting/gradient_boosting.cpp
 	lib/gradient_boosting/goss_sampler.cpp
 	lib/seedable_rng.cpp
@@ -82,10 +84,24 @@ add_executable(
 	include/regression_models/regression_model.h
 	include/regression_models/linear_regression_model.h
 	lib/regression_models/linear_regression_model.cpp
+	include/regression_models/fast_linear_regression.h
+	lib/regression_models/fast_linear_regression.cpp
 	tests/unittest_linear_regression_model.cpp
 )
 
 target_link_libraries(unittest_linear_regression_model gtest_main Eigen3::Eigen pybind11::embed)
+
+
+add_executable(
+	unittest_data_iterators
+	include/linalg.h
+	lib/linalg.cpp
+	include/tree/data_iterator.h
+	lib/tree/sorting_data_iterator.cpp
+	tests/unittest_data_iterators.cpp
+)
+
+target_link_libraries(unittest_data_iterators gtest_main Eigen3::Eigen) 
 
 add_executable(
 	unittest_treestump
@@ -94,8 +110,12 @@ add_executable(
 	include/regression_models/regression_model.h
 	include/regression_models/linear_regression_model.h
 	lib/regression_models/linear_regression_model.cpp
+	include/regression_models/fast_linear_regression.h
+	lib/regression_models/fast_linear_regression.cpp
 	include/tree/treestump.h
 	lib/tree/treestump.cpp
+	include/tree/data_iterator.h
+	lib/tree/sorting_data_iterator.cpp
 	include/loss_functions/loss_function.h
 	include/loss_functions/quadratic_loss.h
 	lib/loss_functions/quadratic_loss.cpp
@@ -115,8 +135,12 @@ add_executable(
 	include/regression_models/regression_model.h
 	include/regression_models/linear_regression_model.h
 	lib/regression_models/linear_regression_model.cpp
+	include/regression_models/fast_linear_regression.h
+	lib/regression_models/fast_linear_regression.cpp
 	include/tree/treestump.h
 	lib/tree/treestump.cpp
+	include/tree/data_iterator.h
+	lib/tree/sorting_data_iterator.cpp
 	include/loss_functions/loss_function.h
 	include/loss_functions/quadratic_loss.h
 	lib/loss_functions/quadratic_loss.cpp
@@ -136,5 +160,6 @@ include(GoogleTest)
 gtest_discover_tests(unittest_quadratic_loss)
 gtest_discover_tests(unittest_linalg)
 gtest_discover_tests(unittest_linear_regression_model)
+gtest_discover_tests(unittest_data_iterators)
 gtest_discover_tests(unittest_treestump)
 gtest_discover_tests(unittest_gradient_boosting)

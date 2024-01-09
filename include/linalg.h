@@ -33,6 +33,8 @@ public:
 	bool operator==(const Matrix &other) const;
 	Matrix operator-(const Matrix &other) const;
 	Matrix operator+(const Matrix &other) const;
+	Matrix operator-() const;
+	friend Matrix operator+(const double &lhs, const Matrix &rhs);
 	friend Matrix operator*(const double &lhs, const Matrix &rhs);
     	friend Matrix operator*(const Matrix &lhs, const double &rhs);
 	friend Matrix operator*(const Matrix &lhs, const Matrix &rhs);
@@ -54,12 +56,15 @@ public:
 
 	Matrix replicate(int const &rows, int const &cols) const;
 	Matrix get_row(int const &row) const;
+	Matrix get_row_range(int const &start, int const &end) const;
 
+	//largest to smallest
 	Matrix get_rows_by_other_col_rank(
 			Matrix const &other,
 			int const &col,
 			int const &N) const;
 
+	Matrix pop_n_first_rows(int const &N) const;
 	Matrix append_rows(Matrix const &other) const;
 	Matrix sample_rows(int const &N, int const &seed) const;
 

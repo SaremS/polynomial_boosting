@@ -106,6 +106,14 @@ Matrix Matrix::operator+(const Matrix &other) const {
 	return Matrix(this->matrix + other.get_as_eigen());
 }
 
+Matrix Matrix::operator-() const {
+	return Matrix(-this->matrix);
+}
+
+Matrix operator+(const double &lhs, const Matrix &rhs) {
+    	return Matrix(lhs, rhs.get_n_rows(), rhs.get_n_cols()) + rhs;
+}
+
 Matrix operator*(const double &lhs, const Matrix &rhs) {
     	return Matrix(rhs.matrix * lhs);
 }
@@ -244,6 +252,11 @@ Matrix Matrix::get_row(int const &row) const {
 	return result;
 }
 
+Matrix Matrix::get_row_range(int const &start, int const &end) const {
+	Matrix result = Matrix(this->matrix.block(start, 0, end - start, this->n_cols));
+	return result;
+}
+
 Matrix Matrix::get_rows_by_other_col_rank(
 		Matrix const &other,
 		int const &col,
@@ -267,6 +280,14 @@ Matrix Matrix::get_rows_by_other_col_rank(
         	int index = valueIndexPairs[i].second;
         	result.row(i) = target.row(index);
     	}
+
+	return Matrix(result);
+}
+
+Matrix Matrix::pop_n_first_rows(int const &N) const {
+	Eigen::MatrixXd result(this->get_n_rows() - N, this->get_n_cols());
+
+	result << this->get_as_eigen().bottomRows(this->get_n_rows() - N);
 
 	return Matrix(result);
 }
