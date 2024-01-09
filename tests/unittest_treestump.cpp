@@ -106,4 +106,26 @@ TEST(testtree, weighted_simple_versus_fast) {
 	double mse = (predictions_fast - predictions_weighted).pow_elementwise(2.0).sum() / 10.0;
 
 	EXPECT_TRUE(mse < 1e-6);
+
+	int split_feature_weighted = weighted_model.get_split_feature();
+	int split_feature_fast = fast_model.get_split_feature();
+
+	EXPECT_TRUE(split_feature_weighted == split_feature_fast);
+
+	double split_value_weighted = weighted_model.get_split_value();
+	double split_value_fast = fast_model.get_split_value();
+
+	EXPECT_TRUE(split_value_weighted == split_value_fast);
+
+	double head_loss_weighted = weighted_model.get_loss_at_head();
+	double head_loss_fast = fast_model.get_loss_at_head();
+
+	EXPECT_TRUE(head_loss_weighted == head_loss_fast);
+
+	double node_loss_weighted = weighted_model.get_weighted_node_loss();
+	double node_loss_fast = fast_model.get_weighted_node_loss();
+
+	EXPECT_TRUE(node_loss_weighted == node_loss_fast);
+	
+
 }

@@ -90,6 +90,18 @@ add_executable(
 
 target_link_libraries(unittest_linear_regression_model gtest_main Eigen3::Eigen pybind11::embed)
 
+
+add_executable(
+	unittest_data_iterators
+	include/linalg.h
+	lib/linalg.cpp
+	include/tree/data_iterator.h
+	lib/tree/sorting_data_iterator.cpp
+	tests/unittest_data_iterators.cpp
+)
+
+target_link_libraries(unittest_data_iterators gtest_main Eigen3::Eigen) 
+
 add_executable(
 	unittest_treestump
 	include/linalg.h
@@ -143,5 +155,6 @@ include(GoogleTest)
 gtest_discover_tests(unittest_quadratic_loss)
 gtest_discover_tests(unittest_linalg)
 gtest_discover_tests(unittest_linear_regression_model)
+gtest_discover_tests(unittest_data_iterators)
 gtest_discover_tests(unittest_treestump)
 gtest_discover_tests(unittest_gradient_boosting)
