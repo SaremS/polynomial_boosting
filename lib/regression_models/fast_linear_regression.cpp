@@ -10,6 +10,7 @@ void FastLinearRegression::fit(const Matrix &X, const Matrix &y) {
 	sum_y = 0.0;
 	sum_x_sq = 0.0;
 	sum_sq_x = 0.0;
+	sum_y_sq = 0.0;
 
 	//calculate sums
 	for (size_t i=0; i<X.get_n_rows(); i++) {
@@ -17,6 +18,7 @@ void FastLinearRegression::fit(const Matrix &X, const Matrix &y) {
 		sum_x += X.get_element_at(i,0);
 		sum_y += y.get_element_at(i,0);
 		sum_x_sq += X.get_element_at(i,0) * X.get_element_at(i,0);
+		sum_y_sq += y.get_element_at(i,0) * y.get_element_at(i,0);
 	}
 	
 	sum_sq_x = sum_x * sum_x;
@@ -45,6 +47,7 @@ void FastLinearRegression::update_coefficients_add(const Matrix &X, const Matrix
 		sum_x += X.get_element_at(i,0);
 		sum_y += y.get_element_at(i,0);
 		sum_x_sq += X.get_element_at(i,0) * X.get_element_at(i,0);
+		sum_y_sq += y.get_element_at(i,0) * y.get_element_at(i,0);
 	}
 
 	sum_sq_x = sum_x * sum_x;
@@ -69,7 +72,8 @@ void FastLinearRegression::update_coefficients_drop(const Matrix &X, const Matri
 		sum_xy -= X.get_element_at(i,0) * y.get_element_at(i,0);
 		sum_x -= X.get_element_at(i,0);
 		sum_y -= y.get_element_at(i,0);
-		sum_x_sq -= X.get_element_at(i,0) * X.get_element_at(i,0);
+		sum_x_sq -= X.get_element_at(i,0) * X.get_element_at(i,0); 
+		sum_y_sq -= y.get_element_at(i,0) * y.get_element_at(i,0);
 	}
 
 	sum_sq_x = sum_x * sum_x;
@@ -105,4 +109,24 @@ Matrix FastLinearRegression::get_coefficients() const {
 	Matrix result = Matrix(coefficients);
 
 	return result;
+}
+
+double FastLinearRegression::get_ols_sse() const {
+	if (!is_trained) {
+		throw std::runtime_error("Model not trained");
+	}
+
+	double sum_xy = this->sum_xy;	
+	double sum_x = this->sum_x;
+	double sum_y = this->sum_y;
+	double sum_x_sq = this->sum_x_sq;
+	double sum_y_sq = this->sum_y_sq;
+
+	double beta0 = this->beta0;
+	double beta1 = this->beta1;
+	double n = this->n_obs;
+
+	double sse = sum_y_sq - 2*beta1*sum_xy - 2*beta0*sum_y + n*beta0*beta0 + 2*beta0*beta1*sum_x + beta1*beta1*sum_x_sq;
+
+	return sse;
 }
