@@ -269,7 +269,7 @@ Matrix Matrix::get_rows_by_other_col_rank(
     	// Create a vector of indices and partially sort to find top N indices
     	std::vector<std::pair<double, int> > valueIndexPairs;
     	for (int i = 0; i < ranker.rows(); ++i) {
-        	valueIndexPairs.push_back(std::make_pair(ranker(i, 0), i));
+        	valueIndexPairs.push_back(std::make_pair(ranker(i, col), i));
     	}
 
     	std::partial_sort(valueIndexPairs.begin(), valueIndexPairs.begin() + N, valueIndexPairs.end(), std::greater<std::pair<double, int> >());
@@ -319,3 +319,50 @@ Matrix Matrix::sample_rows(int const &N, int const &seed) const {
 	return Matrix(sampledMat);
 }
 
+
+std::vector<Matrix> sort_matrices_by_other_col(
+		std::vector<Matrix> const &matrices,
+		Matrix const &other,
+		int const &col) {
+
+	std::vector<Eigen::MatrixXd> targets;
+	Eigen::MatrixXd ranker = other.get_as_eigen().col(col);
+
+	int N = other.get_n_rows();
+
+	//Matrices to Eigen::MatrixXd
+	for (int i=0; i<matrices.size(); i++) {
+		targets.push_back(matrices[i].get_as_eigen());
+	}
+
+    	// Create a vector of indices and partially sort to find top N indices
+	std::vector<std::pair<double, int> > valueIndexPairs;
+    	for (int i = 0; i < ranker.rows(); ++i) {
+        	valueIndexPairs.push_back(std::make_pair(ranker(i, col), i));
+    	}
+
+	std::partial_sort(valueIndexPairs.begin(), valueIndexPairs.begin() + N, valueIndexPairs.end(), std::greater<std::pair<double, int> >());
+	
+	std::vector<Eigen::MatrixXd> result;
+
+	for (int i=0; i<matrices.size(); i++) {
+		Eigen::MatrixXd mat(N, targets[i].cols());
+		result.push_back(mat);
+	}
+
+    	// Extract the corresponding rows from the target matrix
+	for (int i = 0; i < N; ++i) {
+		int index = valueIndexPairs[i].second;
+		for (int j=0; j<matrices.size(); j++) {
+			result[j].row(i) = targets[j].row(index);
+		}
+    	}
+
+	std::vector<Matrix> resultmat;
+
+	for (int i=0; i<matrices.size(); i++) {
+		resultmat.push_back(Matrix(result[i]));
+	}
+
+	return resultmat;
+}

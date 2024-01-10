@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "tree/data_iterator.h"
 #include "linalg.h"
 
@@ -18,9 +20,13 @@ DataSplit* SortingDataIterator::next_internal() const {
 
 
 SortingDataIterator::SortingDataIterator(Matrix X, Matrix y, Matrix weights, int feature_index, int min_samples_split) : DataIterator(X, y, weights, feature_index, min_samples_split) {
-	this->weights = this->weights.get_rows_by_other_col_rank(-this->X, 0, this->n_samples);
-	this->y = this->y.get_rows_by_other_col_rank(-this->X, 0, this->n_samples);
-	this->X = this->X.get_rows_by_other_col_rank(-this->X, 0, this->n_samples);
+	std::vector<Matrix> matrices = {this->X, this->y, this->weights};
+		
+	std::vector<Matrix> sorted = sort_matrices_by_other_col(matrices, -this->X, 0);
+
+	this->X = sorted[0];
+	this->y = sorted[1];
+	this->weights = sorted[2];
 };
 
 DataSplit SortingDataIterator::first() const {

@@ -63,12 +63,20 @@ public:
 			Matrix const &other,
 			int const &col,
 			int const &N) const;
+	
 
 	Matrix pop_n_first_rows(int const &N) const;
 	Matrix append_rows(Matrix const &other) const;
 	Matrix sample_rows(int const &N, int const &seed) const;
 
 };
+
+//largest to smallest	
+std::vector<Matrix> sort_matrices_by_other_col(
+		std::vector<Matrix> const &matrices,
+		Matrix const &other,
+		int const &othercol
+);
 
 Matrix apply_binary(
 		Matrix const &left,
