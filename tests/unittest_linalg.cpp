@@ -478,3 +478,45 @@ TEST(testlinalg, pop_n) {
 
 	EXPECT_EQ(targmat.pop_n_first_rows(1), expmat);
 }
+
+TEST(testlinalg, sort_matrices_by_other_col) {
+	std::vector<std::vector<double>> target1 = {
+		{1.0, 2.0},
+		{3.0, 4.0},
+		{5.0, 6.0}
+    	};
+	Matrix targmat1 = Matrix(target1);
+
+	std::vector<std::vector<double>> target2 = {
+		{5.0, 6.0},
+		{7.0, 8.0},
+		{1.0, 2.0}
+    	};
+	Matrix targmat2 = Matrix(target2);
+
+	std::vector<std::vector<double>> other = {
+		{1.0},
+		{2.0},
+		{3.0}
+    	};
+	Matrix othermat = Matrix(other);
+
+	std::vector<std::vector<double>> expected1 = {
+		{5.0, 6.0},
+		{3.0, 4.0},
+		{1.0, 2.0},
+    	};
+	Matrix expmat1 = Matrix(expected1);
+
+	std::vector<std::vector<double>> expected2 = {
+		{1.0, 2.0},
+		{7.0, 8.0},
+		{5.0, 6.0},
+    	};
+	Matrix expmat2 = Matrix(expected2);
+
+	std::vector<Matrix> matrices = {targmat1, targmat2};
+	std::vector<Matrix> expected = {expmat1, expmat2};
+
+	EXPECT_EQ(sort_matrices_by_other_col(matrices, othermat, 0), expected);
+}
