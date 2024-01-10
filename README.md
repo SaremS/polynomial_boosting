@@ -27,3 +27,8 @@ Polynomial p=1 Boosting VS. sklearn Gradient Boosting on a Quadratic function (h
 ![plot](./img/square_fit_plot.png)
 
 Also, check the [example notebook](https://github.com/SaremS/polynomial_boosting/blob/master/ExampleNotebook.ipynb)
+
+## Benchmarks
+Hyperparameters were chosen to make the respective Boosting implementations as similar as possible (e.g. Linear Trees for LightGBM)
+
+![benchmarks](./benchmarks/results.png)
