@@ -15,7 +15,15 @@ namespace py = pybind11;
 
 PYBIND11_MODULE(polynomial_boosting,m) {
 	py::class_<GradientBoosting>(m, "PolynomialBoostingModel")
-		.def(py::init<double, double, int, int, double, double, int>())
+		.def(py::init<int, double, double, int, int, double, double, int>(),
+				py::arg("polynomial_level") = 1,
+				py::arg("learning_rate") = 0.1,
+				py::arg("lambda_regularization") = 0.0,
+				py::arg("n_trees") = 100,
+				py::arg("min_obs_per_leaf") = 5,
+				py::arg("goss_alpha") = 0.5,
+				py::arg("goss_beta") = 0.5,
+				py::arg("seed") = 0)
 		.def("fit", &GradientBoosting::fit_eigen)
 		.def("predict", &GradientBoosting::predict_eigen)
 		.def("fit_fast", &GradientBoosting::fit_fast_eigen)
@@ -74,7 +82,7 @@ void GradientBoosting::fit_fast(const Matrix &X, const Matrix &y) {
 			this->goss_sampler.sample(X, pseudo_residuals, this->rng.get_int(1, 999999));
 
 		// Fit a tree to the pseudo-residuals
-		TreeStump* new_tree = new TreeStump(this->loss_function, this->min_obs_per_leaf, this->lambda_regularization);
+		TreeStump* new_tree = new TreeStump(this->loss_function, this->min_obs_per_leaf, this->lambda_regularization, this->polynomial_level);
 		new_tree->fit_fast_with_weights(X_goss, y_goss, w_goss);
 		this->trees.push_back(new_tree);
 	}

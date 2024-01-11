@@ -22,7 +22,7 @@ TEST(testdataiterators, simple) {
 	Matrix y = Matrix(inputs);
 	Matrix weights = Matrix(inputs);
 
-	DataIterator* data_iterator = new SortingDataIterator(X, y, weights, 0, 1);
+	DataIterator* data_iterator = new SortingDataIterator(X, y, weights, X, 1);
 
 	DataSplit split = data_iterator->first();
 
@@ -80,7 +80,7 @@ TEST(testdataiterators, unsorted_inputs) {
 	Matrix y = Matrix(inputs);
 	Matrix weights = Matrix(inputs);
 
-	DataIterator* data_iterator = new SortingDataIterator(X, y, weights, 0, 1);
+	DataIterator* data_iterator = new SortingDataIterator(X, y, weights, X, 1);
 
 	DataSplit split = data_iterator->first();
 

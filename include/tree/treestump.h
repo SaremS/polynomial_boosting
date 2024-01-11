@@ -12,6 +12,8 @@ private:
 	
 	int min_obs_per_leaf;
 
+	int polynomial_level;
+
 	int split_feature;
 	double split_value;
 
@@ -26,21 +28,27 @@ private:
 	std::function<double(double, double)> get_loss_lambda() const;
 	std::function<double(double, double, double)> get_weighted_loss_lambda() const;	
 
+	Matrix get_polynomial_features(const Matrix &X) const;
+
 public:
 	TreeStump(
 			int min_obs_per_leaf,
-			double lambda_regularization=0.0): 
+			double lambda_regularization=0.0,
+			int polynomial_level=1): 
 		loss_function(new QuadraticLoss()),
 		min_obs_per_leaf(min_obs_per_leaf),
+		polynomial_level(polynomial_level),
 		lambda_regularization(lambda_regularization),
 		left_model(nullptr),
 		right_model(nullptr){};
 	TreeStump(
 			LossFunction* loss_function,
 			int min_obs_per_leaf,
-			double lambda_regularization=0.0): 
+			double lambda_regularization=0.0,
+			int polynomial_level=1): 
 		loss_function(loss_function),
 		min_obs_per_leaf(min_obs_per_leaf),
+		polynomial_level(polynomial_level),
 		lambda_regularization(lambda_regularization),
 		left_model(nullptr),
 		right_model(nullptr){};

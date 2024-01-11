@@ -169,13 +169,17 @@ TEST(testregression, comp_regularized_normal_fast_regression) {
 	
 	normal_model.fit(Xnormal,y);
 	
-	fast_model.fit(X,y);
+	fast_model.fit(Xnormal,y);
 
+	std::cout << normal_model.get_coefficients().get_as_eigen() << std::endl;
+	std::cout << std::endl;
+	std::cout << fast_model.get_coefficients().get_as_eigen() << std::endl;
 
 	Matrix predictions_normal = normal_model.predict(Xnormal);
+	Matrix predictions_fast = fast_model.predict(Xnormal);
 
-
-	Matrix predictions_fast = fast_model.predict(X);
+	std::cout << predictions_normal.get_as_eigen() << std::endl;
+	std::cout << predictions_fast.get_as_eigen() << std::endl;
 
 	double mse = (predictions_normal - predictions_fast).pow_elementwise(2.0).sum() / 10.0;
 

@@ -71,6 +71,18 @@ public:
 
 };
 
+//Regularization only applied to non-intercept terms.
+//With high regularization, the output is then close to that of a
+//standard decision tree.
+Matrix make_regularization_matrix(
+		int const &n_cols,
+		double const &lambda_regularization
+);
+
+Matrix concat_matrices_colwise(
+		std::vector<Matrix> const &matrices
+);
+
 //largest to smallest	
 std::vector<Matrix> sort_matrices_by_other_col(
 		std::vector<Matrix> const &matrices,
