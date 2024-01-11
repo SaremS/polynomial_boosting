@@ -7,30 +7,22 @@
 //fast updates for linear regression (currently only supports 1 feature)
 class FastLinearRegression: public RegressionModel {
 private:
-	double beta0;
-	double beta1;
+	Matrix coefficients;
 
-	double sum_xy;
-	double sum_x;
-	double sum_y;
-	double sum_x_sq; //sum of x^2
-	double sum_sq_x; //sum of x, squared
-	double sum_y_sq; //sum of y^2
+	Matrix XX;
+	Matrix Xy;
+	Matrix yy;
 	
+	double ols_sse;
+
 	double n_obs;
 
 	double lambda_regularization;
 	bool is_trained;
 public:
 	FastLinearRegression(double lambda_regularization = 0.0):
-		lambda_regularization(lambda_regularization),
-		sum_xy(0.0),
-		sum_x(0.0),
-		sum_y(0.0),
-		sum_x_sq(0.0),
-		sum_sq_x(0.0),
-		sum_y_sq(0.0),
 		n_obs(0.0),
+		lambda_regularization(lambda_regularization),
 		is_trained(false) {};
 
 	void fit(const Matrix &X, const Matrix &y);

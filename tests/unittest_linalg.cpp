@@ -520,3 +520,43 @@ TEST(testlinalg, sort_matrices_by_other_col) {
 
 	EXPECT_EQ(sort_matrices_by_other_col(matrices, othermat, 0), expected);
 }
+
+TEST(testlinalg, make_regularization_matrix) {
+	std::vector<std::vector<double>> expected = {
+		{0.0, 0.0},
+		{0.0, 1.0}
+    	};
+	Matrix expmat = Matrix(expected);
+	
+	std::cout << "REGREGREG" << std::endl;
+	std::cout << make_regularization_matrix(2, 1.0).get_as_eigen() << std::endl;
+
+	EXPECT_EQ(make_regularization_matrix(2, 1.0), expmat);
+}
+
+TEST(testlinalg, concat_matrices_colwise) {
+	std::vector<std::vector<double>> target1 = {
+		{1.0, 2.0},
+		{3.0, 4.0},
+		{5.0, 6.0}
+    	};
+	Matrix targmat1 = Matrix(target1);
+
+	std::vector<std::vector<double>> target2 = {
+		{5.0, 6.0},
+		{7.0, 8.0},
+		{1.0, 2.0}
+    	};
+	Matrix targmat2 = Matrix(target2);
+
+	std::vector<std::vector<double>> expected = {
+		{1.0, 2.0, 5.0, 6.0},
+		{3.0, 4.0, 7.0, 8.0},
+		{5.0, 6.0, 1.0, 2.0}
+    	};
+	Matrix expmat = Matrix(expected);
+
+	std::vector<Matrix> matrices = {targmat1, targmat2};
+
+	EXPECT_EQ(concat_matrices_colwise(matrices), expmat);
+}

@@ -42,8 +42,14 @@ def get_wine_quality():
 
 #-------------------Models-------------------#
 
-def fit_predict_polyboost(X_train, y_train, X_test):
-    model = PolynomialBoostingModel(LEARNING_RATE, LINEAR_LAMBDA, N_TREES, MIN_SAMPLES_LEAF, GOSS_ALPHA, GOSS_BETA, SEED)
+def fit_predict_polyboost_1(X_train, y_train, X_test):
+    model = PolynomialBoostingModel(1, LEARNING_RATE, LINEAR_LAMBDA, N_TREES, MIN_SAMPLES_LEAF, GOSS_ALPHA, GOSS_BETA, SEED)
+    model.fit_fast(X_train, y_train.reshape(-1, 1))
+    y_pred = model.predict_fast(X_test).reshape(-1)
+    return y_pred
+
+def fit_predict_polyboost_2(X_train, y_train, X_test):
+    model = PolynomialBoostingModel(2, LEARNING_RATE, LINEAR_LAMBDA, N_TREES, MIN_SAMPLES_LEAF, GOSS_ALPHA, GOSS_BETA, SEED)
     model.fit_fast(X_train, y_train.reshape(-1, 1))
     y_pred = model.predict_fast(X_test).reshape(-1)
     return y_pred
@@ -81,7 +87,7 @@ def fit_predict_sklearn(X_train, y_train, X_test):
 #-------------------Benchmarking-------------------#
 
 DATASETS = {"California Housing": get_california_housing, "Diabetes": get_diabetes, "Wine Quality": get_wine_quality}
-MODELS = {"PolyBoost (linear)": fit_predict_polyboost, "LightGBM": fit_predict_lgb, "Sklearn": fit_predict_sklearn}
+MODELS = {"PolyBoost (linear, p=1)": fit_predict_polyboost_1, "PolyBoost (quadratic, p=2)": fit_predict_polyboost_2, "LightGBM": fit_predict_lgb, "Sklearn": fit_predict_sklearn}
 
 def full_benchmark():
     scores_df = pd.DataFrame(columns=MODELS.keys(), index=DATASETS.keys())

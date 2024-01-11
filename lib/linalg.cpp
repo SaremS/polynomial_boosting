@@ -95,7 +95,10 @@ Matrix Matrix::dot(const Matrix &other) const {
 }
 
 bool Matrix::operator==(const Matrix &other) const {
-	return this->matrix == other.get_as_eigen();
+	bool same_size = this->n_rows == other.get_n_rows() && this->n_cols == other.get_n_cols();
+	bool same_elements = this->matrix == other.get_as_eigen();
+
+	return same_size && same_elements; 
 }
 
 Matrix Matrix::operator-(const Matrix &other) const {
@@ -141,6 +144,7 @@ void Matrix::prepend_ones() {
 	new_matrix.col(0) = Eigen::VectorXd::Ones(this->n_rows);
 	new_matrix.block(0, 1, this->n_rows, this->n_cols) = matrix;
 
+	this->n_cols += 1;
 	this->matrix = new_matrix;
 }
 
@@ -319,6 +323,29 @@ Matrix Matrix::sample_rows(int const &N, int const &seed) const {
 	return Matrix(sampledMat);
 }
 
+Matrix make_regularization_matrix(
+		int const &n_cols,
+		double const &lambda_regularization
+) {
+	std::vector<std::vector<double>> result;
+
+	for (int i=0; i<n_cols; i++) {
+		std::vector<double> row;
+
+		for (int j=0; j<n_cols; j++) {
+			if (i>0 && i == j) {
+				row.push_back(lambda_regularization);
+			} else {
+				row.push_back(0.0);
+			}
+		}
+
+		result.push_back(row);
+	}
+
+	return Matrix(result);
+}
+
 
 std::vector<Matrix> sort_matrices_by_other_col(
 		std::vector<Matrix> const &matrices,
@@ -365,4 +392,33 @@ std::vector<Matrix> sort_matrices_by_other_col(
 	}
 
 	return resultmat;
+}
+
+Matrix concat_matrices_colwise(
+		std::vector<Matrix> const &matrices
+) {
+	std::vector<Eigen::MatrixXd> targets;
+
+	//Matrices to Eigen::MatrixXd
+	for (int i=0; i<matrices.size(); i++) {
+		targets.push_back(matrices[i].get_as_eigen());
+	}
+
+	int n_rows = targets[0].rows();
+	int n_cols = 0;
+
+	for (int i=0; i<matrices.size(); i++) {
+		n_cols += targets[i].cols();
+	}
+
+	Eigen::MatrixXd result(n_rows, n_cols);
+
+	int col = 0;
+
+	for (int i=0; i<matrices.size(); i++) {
+		result.block(0, col, n_rows, targets[i].cols()) = targets[i];
+		col += targets[i].cols();
+	}
+
+	return Matrix(result);
 }

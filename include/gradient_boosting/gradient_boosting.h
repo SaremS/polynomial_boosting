@@ -18,6 +18,7 @@ private:
 	double learning_rate;
 	double lambda_regularization;
 
+	int polynomial_level;
 	int min_obs_per_leaf;
 	int n_trees;
 	int n_features;
@@ -26,6 +27,7 @@ private:
 	SeedableRNG rng;
 public:
 	GradientBoosting(
+			int polynomial_level = 1,
 			double learning_rate = 0.1,
 			double lambda_regularization = 0.0,
 			int n_trees = 100,
@@ -33,6 +35,7 @@ public:
 			double goss_alpha = 0.5,
 			double goss_beta = 0.5,
 			int seed = 0):
+		polynomial_level(polynomial_level),
 		loss_function(new QuadraticLoss()),
 		learning_rate(learning_rate),
 		lambda_regularization(lambda_regularization),
@@ -42,6 +45,7 @@ public:
 		rng(seed) {};
 	GradientBoosting(
 			LossFunction* loss_function,
+			int polynomial_level = 1,
 			double learning_rate = 0.1,
 			double lambda_regularization = 0.0,
 			int n_trees = 100,
@@ -50,6 +54,7 @@ public:
 			double goss_beta = 0.5,
 			int seed = 0): 
 		loss_function(loss_function),
+		polynomial_level(polynomial_level),
 		learning_rate(learning_rate),
 		lambda_regularization(lambda_regularization),
 		n_trees(n_trees),
